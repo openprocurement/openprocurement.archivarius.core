@@ -8,6 +8,7 @@ from logging import getLogger
 from openprocurement.api.utils import context_unpack, json_view, APIResource
 from pyramid.security import Allow
 
+
 LOGGER = getLogger(__package__)
 
 
