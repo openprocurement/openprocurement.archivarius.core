@@ -23,12 +23,6 @@ from urlparse import urlparse
 from .workers import ArchiveWorker
 from .client import APIClient
 
-try:
-    import urllib3.contrib.pyopenssl
-    urllib3.contrib.pyopenssl.inject_into_urllib3()
-except ImportError:
-    pass
-
 logger = logging.getLogger(__name__)
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 
@@ -141,10 +135,10 @@ class ArchivariusBridge(object):
         if self.api_host != '' and self.api_host is not None:
             api_host = urlparse(self.api_host)
             if api_host.scheme == '' and api_host.netloc == '':
-                raise ConfigError('Invalid \'tenders_api_server\' url.')
+                raise ConfigError('Invalid \'resources_api_server\' url.')
         else:
             raise ConfigError('In config dictionary empty or missing'
-                              ' \'tenders_api_server\'')
+                              ' \'resources_api_server\'')
         self.db = prepare_couchdb(self.couch_url, self.db_name, logger)
         self.archive_db = prepare_couchdb(self.couch_url, self.db_archive_name, logger)
         # TODO
