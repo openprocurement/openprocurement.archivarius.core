@@ -11,15 +11,20 @@ requires = [
     'setuptools',
     'couchdb',
     'pytz',
+    'libnacl',
+]
+api_requires = [
+    'openprocurement.api',
 ]
 bridge_requires = requires + [
     'openprocurement_client',
 ]
-test_requires = bridge_requires + [
+test_requires = bridge_requires + api_requires + [
     'webtest',
     'python-coveralls',
     'nose',
-    'mock'
+    'mock',
+    'munch'
 ]
 
 entry_points = {
