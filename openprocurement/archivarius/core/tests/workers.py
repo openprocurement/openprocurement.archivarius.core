@@ -2,7 +2,6 @@
 import datetime
 import unittest
 import uuid
-from copy import deepcopy
 from gevent import sleep
 from gevent.queue import Queue
 from mock import MagicMock, patch
@@ -75,8 +74,8 @@ class TestArchiveWorker(unittest.TestCase):
     def test_add_to_retry_queue(self):
         retry_items_queue = Queue()
         worker = ArchiveWorker(config_dict=self.worker_config,
-                                    retry_resource_items_queue=retry_items_queue,
-                                    log_dict=self.log_dict)
+                               retry_resource_items_queue=retry_items_queue,
+                               log_dict=self.log_dict)
         retry_item = {
             'id': uuid.uuid4().hex,
             'dateModified': datetime.datetime.utcnow().isoformat(),
@@ -119,8 +118,8 @@ class TestArchiveWorker(unittest.TestCase):
 
         # Success test
         worker = ArchiveWorker(api_clients_queue=api_clients_queue,
-                                    config_dict=self.worker_config,
-                                    log_dict=self.log_dict)
+                               config_dict=self.worker_config,
+                               log_dict=self.log_dict)
         self.assertEqual(worker.api_clients_queue.qsize(), 1)
         api_client = worker._get_api_client_dict()
         self.assertEqual(api_client, client_dict)
@@ -171,9 +170,9 @@ class TestArchiveWorker(unittest.TestCase):
         }
         mock_api_client.get_resource_dump.return_value = return_dict
         worker = ArchiveWorker(api_clients_queue=api_clients_queue,
-                                    config_dict=self.worker_config,
-                                    retry_resource_items_queue=retry_queue,
-                                    log_dict=self.log_dict)
+                               config_dict=self.worker_config,
+                               retry_resource_items_queue=retry_queue,
+                               log_dict=self.log_dict)
 
         # Success test
         self.assertEqual(worker.api_clients_queue.qsize(), 1)
@@ -304,7 +303,6 @@ class TestArchiveWorker(unittest.TestCase):
                                api_clients_queue=api_clients_queue, db=db, archive_db=archive_db,
                                secret_archive_db=secret_archive_db)
 
-
         # Try get item from resource items queue
         bridge._run()
         self.assertEqual(bridge.log_dict['exceptions_count'], 0)
@@ -324,7 +322,6 @@ class TestArchiveWorker(unittest.TestCase):
         self.assertEqual(bridge.log_dict['exceptions_count'], 1)
         self.assertEqual(bridge.log_dict['add_to_retry'], 1)
 
-
         resource_item['dateModified'] = datetime.datetime.now().isoformat()
         bridge.archive_db.get.side_effect = [Exception('Archive DB exception'), None,
                                              munchify(archive_doc), munchify(archive_doc),
@@ -332,7 +329,6 @@ class TestArchiveWorker(unittest.TestCase):
                                              munchify(archive_doc), munchify(archive_doc),
                                              munchify(archive_doc)]
         bridge.archive_db.save = MagicMock()
-
 
         # Put resource to public db
         queue.put(queue_resource_item)
