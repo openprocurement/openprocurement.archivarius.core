@@ -12,12 +12,11 @@ from socket import error
 from openprocurement.archivarius.core.bridge import (
     prepare_couchdb,
     ConfigError,
-    DEFAULTS,
-    WORKER_CONFIG,
     ArchivariusBridge
 )
 
 logger = getLogger(__name__)
+
 
 class TestBridge(unittest.TestCase):
 
@@ -27,7 +26,6 @@ class TestBridge(unittest.TestCase):
         cls.config = ConfigParser()
         cls.config.add_section('main')
         cls.config.set('main', 'resources_api_server', 'http://localhost')
-
 
     def test_prepare_couchdb(self):
         # Database don't exist.
