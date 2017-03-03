@@ -159,6 +159,7 @@ class ArchivariusBridge(object):
                 api_client = APIClient(host_url=self.api_host,
                                        user_agent=client_user_agent,
                                        api_version=self.api_version,
+                                       resource='RESOURCE',
                                        key=self.api_key)
                 self.api_clients_queue.put({
                     'client': api_client,
@@ -180,7 +181,7 @@ class ArchivariusBridge(object):
 
     def fill_resource_items_queue(self, resource):
         start_time = datetime.now(TZ)
-        rows = self.db.iterview(self.resources[resource]['view_path'], 10 ** 3)
+        rows = self.db.iterview(self.resources[resource]['view_path'], 10 ** 3, include_docs=True)
         filter_func = partial(self.resources[resource]['filter'], time=start_time)
         for row in ifilter(filter_func, rows):
             self.resource_items_queue.put({
