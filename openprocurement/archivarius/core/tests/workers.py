@@ -21,10 +21,10 @@ class TestArchiveWorker(unittest.TestCase):
         'client_inc_step_timeout': 0.1,
         'client_dec_step_timeout': 0.02,
         'drop_threshold_client_cookies': 1.5,
-        'worker_sleep': 3,
-        'retry_default_timeout': 5,
+        'worker_sleep': 0.3,
+        'retry_default_timeout': 0.4,
         'retries_count': 5,
-        'queue_timeout': 3,
+        'queue_timeout': 0.2,
         'bulk_save_limit': 1,
         'bulk_save_interval': 1
     }
