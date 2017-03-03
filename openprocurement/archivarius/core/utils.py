@@ -7,6 +7,14 @@ from libnacl.secret import SecretBox
 from logging import getLogger
 from openprocurement.api.utils import context_unpack, json_view, APIResource
 from pyramid.security import Allow
+from pkg_resources import Environment
+from itertools import chain
+
+PKG_ENV = Environment()
+PKG_VERSIONS = dict(chain.from_iterable([
+    [(x.project_name, x.version) for x in PKG_ENV[i]]
+    for i in PKG_ENV
+]))
 
 
 LOGGER = getLogger(__package__)
@@ -62,7 +70,7 @@ class ArchivariusResource(APIResource):
         """
         self.LOGGER.info('Dumped {} {}'.format(self.resource, self.context.id),
                          extra=context_unpack(self.request, {'MESSAGE_ID': '{}_dumped'.format(self.resource)}))
-        return {'data': dump_resource(self.request)}
+        return {'data': {self.resource: dump_resource(self.request), 'versions': PKG_VERSIONS}}
 
     @json_view(permission='delete_resource')
     def delete(self):
@@ -71,4 +79,4 @@ class ArchivariusResource(APIResource):
         if delete_resource(self.request):
             self.LOGGER.info('Deleted {} {}'.format(self.resource, self.context.id),
                              extra=context_unpack(self.request, {'MESSAGE_ID': '{}_deleted'.format(self.resource)}))
-            return {'data': dump_resource(self.request)}
+            return {'data': {self.resource: dump_resource(self.request), 'versions': PKG_VERSIONS}}

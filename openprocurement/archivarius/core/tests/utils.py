@@ -23,11 +23,12 @@ from mock import MagicMock, patch
 from munch import munchify
 
 tender = MagicMock()
+tender.doc_type.lower.return_value = 'tender'
 tender.serialize.return_value = dict(
     id=uuid.uuid4().hex,
     dateModified=datetime.now().isoformat(),
     rev='1-{}'.format(uuid.uuid4().hex),
-    doc_type='Tenders'
+    doc_type='Tender'
 )
 
 
@@ -132,7 +133,7 @@ class TestUtils(unittest.TestCase):
         self.app.authorization = ('Basic', ('archivarius', ''))
         response = self.app.get('/tenders/abc/dump')
 
-        encrypted_dump = response.json['data']
+        encrypted_dump = response.json['data']['tender']
         box = SecretBox('a' * 32)
         decrypted_data = box.decrypt(b64decode(encrypted_dump))
         decrypted_data = json.loads(decrypted_data)
@@ -147,7 +148,7 @@ class TestUtils(unittest.TestCase):
         self.app.authorization = ('Basic', ('archivarius', ''))
         response = self.app.delete('/tenders/abc/dump')
 
-        encrypted_dump = response.json['data']
+        encrypted_dump = response.json['data']['tender']
         box = SecretBox('a' * 32)
         decrypted_data = box.decrypt(b64decode(encrypted_dump))
         decrypted_data = json.loads(decrypted_data)
