@@ -18,6 +18,7 @@ api_requires = [
 ]
 bridge_requires = requires + [
     'openprocurement_client',
+    'openprocurement.edge',
 ]
 test_requires = bridge_requires + api_requires + [
     'webtest',
