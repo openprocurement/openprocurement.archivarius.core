@@ -9,6 +9,7 @@ with open(os.path.join(here, 'README.rst')) as f:
 requires = [
     'gevent',
     'setuptools',
+    'boto',
     'couchdb',
     'pytz',
     'libnacl',

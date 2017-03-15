@@ -21,8 +21,10 @@ from pkg_resources import iter_entry_points
 from pytz import timezone
 from socket import error
 from urlparse import urlparse
+from boto.s3.connection import S3Connection
 from .workers import ArchiveWorker
 from .client import APIClient
+from .storages import S3Storage
 
 logger = logging.getLogger(__name__)
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
@@ -80,6 +82,15 @@ def prepare_couchdb(couch_url, db_name, logger):
     #else:
         #logger.info('Validate document update view already exist.')
     return db
+
+
+def prepare_s3_connection(access_key, secret_key, bucket):
+    try:
+        connection = S3Connection(access_key, secret_key)
+    except Exception as e:
+        logger.fatal('Unable to establish s3 connection. Error: {}'.format(e.message))
+        raise ConfigError(e.strerror)
+    return S3Storage(connection, bucket)
 
 
 class ArchivariusBridge(object):
@@ -142,8 +153,13 @@ class ArchivariusBridge(object):
                               ' \'resources_api_server\'')
         self.db = prepare_couchdb(self.couch_url, self.db_name, logger)
         self.archive_db = prepare_couchdb(self.couch_url, self.db_archive_name, logger)
-        # TODO
-        self.archive_db2 = prepare_couchdb(self.couch_url, self.db_archive_name + '_secret', logger)
+        # use s3 bucket instead couchdb if keys in config
+        s3_conn_params = map(self.config_get,
+                             ['s3.access_key', 's3.secret_key', 's3.bucket'])
+        if all(s3_conn_params):
+            self.archive_db2 = prepare_s3_connection(*s3_conn_params)
+        else:
+            self.archive_db2 = prepare_couchdb(self.couch_url, self.db_archive_name + '_secret', logger)
 
         self.resources = {}
         for entry_point in iter_entry_points('openprocurement.archivarius.resources'):

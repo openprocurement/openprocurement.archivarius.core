@@ -15,6 +15,9 @@ from openprocurement.archivarius.core.bridge import (
     ConfigError,
     ArchivariusBridge
 )
+from openprocurement.archivarius.core.storages import (
+    S3Storage
+)
 
 logger = getLogger(__name__)
 
@@ -90,7 +93,6 @@ class TestBridge(unittest.TestCase):
         self.assertEqual(archivarius.resource_items_queue.maxsize, 1)
         self.assertEqual(archivarius.retry_resource_items_queue.maxsize, 1)
 
-
         del archivarius
         tender_entrypoint = MagicMock()
         tender_entrypoint.name = 'tenders'
@@ -108,6 +110,15 @@ class TestBridge(unittest.TestCase):
         self.assertNotEqual(archivarius.db.get('_design/contracts'), None)
         self.assertNotEqual(archivarius.db.get('_design/plans'), None)
         self.assertNotEqual(archivarius.db.get('_design/tenders'), None)
+        del archivarius
+
+        self.config.set('main', 's3.access_key', 'AKIATEST')
+        self.config.set('main', 's3.secret_key', 'SECRET')
+        self.config.set('main', 's3.bucket', 'BUCKET')
+        archivarius = ArchivariusBridge(self.config)
+        self.assertTrue(isinstance(archivarius.archive_db2, S3Storage))
+        del archivarius
+        # import pdb; pdb.set_trace()
 
     @patch('openprocurement.archivarius.core.bridge.APIClient')
     def test_create_api_client(self, mock_APIClient):
