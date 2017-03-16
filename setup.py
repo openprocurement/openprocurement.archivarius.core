@@ -9,7 +9,6 @@ with open(os.path.join(here, 'README.rst')) as f:
 requires = [
     'gevent',
     'setuptools',
-    'boto',
     'couchdb',
     'pytz',
     'libnacl',
@@ -20,6 +19,7 @@ api_requires = [
 bridge_requires = requires + [
     'openprocurement_client',
     'openprocurement.edge',
+    'boto',
 ]
 test_requires = bridge_requires + api_requires + [
     'webtest',

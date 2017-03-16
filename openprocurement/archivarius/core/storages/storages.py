@@ -61,11 +61,11 @@ def s3(bridge):
         aws_params[name[3:]] = value
     connection = S3Connection(**aws_params)
     storage = S3Storage(connection, config_get(bridge.config, 's3.bucket'))
-    setattr(bridge, 'archive_db2', storage)
+    setattr(bridge, 'secret_archive', storage)
 
 
 def couch(bridge):
     url = getattr(bridge, 'couch_url')
     default_db_name = getattr(bridge, 'db_archive_name')
     name = '{}_{}'.format(default_db_name, 'secret')
-    setattr(bridge, 'archive_db2', prepare_couchdb(url, name, logger))
+    setattr(bridge, 'secret_archive', prepare_couchdb(url, name, logger))

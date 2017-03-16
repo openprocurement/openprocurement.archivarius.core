@@ -120,12 +120,12 @@ class TestBridge(unittest.TestCase):
         self.config.set('main', 's3.aws_secret_access_key', 'SECRET')
         self.config.set('main', 's3.bucket', 'BUCKET')
         archivarius = ArchivariusBridge(self.config)
-        self.assertTrue(isinstance(archivarius.archive_db2, S3Storage))
+        self.assertTrue(isinstance(archivarius.secret_archive, S3Storage))
         del archivarius
 
         self.config.set('main', 'secret_storage', 'couchdb')
         archivarius = ArchivariusBridge(self.config)
-        self.assertTrue(isinstance(archivarius.archive_db2, Database))
+        self.assertTrue(isinstance(archivarius.secret_archive, Database))
         del archivarius
 
     @patch('openprocurement.archivarius.core.bridge.APIClient')

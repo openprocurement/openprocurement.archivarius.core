@@ -179,7 +179,7 @@ class ArchivariusBridge(object):
             if self.resource_items_queue.qsize() > 0 and self.workers_pool.free_count() > 0:
                 w = ArchiveWorker.spawn(self.api_clients_queue,
                                         self.resource_items_queue,
-                                        self.db, self.archive_db, self.archive_db2, self.workers_config,
+                                        self.db, self.archive_db, self.secret_archive, self.workers_config,
                                         self.retry_resource_items_queue,
                                         self.log_dict)
                 self.workers_pool.add(w)
@@ -200,7 +200,7 @@ class ArchivariusBridge(object):
         if not self.resource_items_queue.empty() and len(self.workers_pool) < self.workers_min:
             w = ArchiveWorker.spawn(self.api_clients_queue,
                                     self.resource_items_queue,
-                                    self.db, self.archive_db, self.archive_db2, self.workers_config,
+                                    self.db, self.archive_db, self.secret_archive, self.workers_config,
                                     self.retry_resource_items_queue,
                                     self.log_dict)
             self.workers_pool.add(w)
@@ -208,7 +208,7 @@ class ArchivariusBridge(object):
         if not self.retry_resource_items_queue.empty() and len(self.retry_workers_pool) < self.retry_workers_min:
             w = ArchiveWorker.spawn(self.api_clients_queue,
                                     self.retry_resource_items_queue,
-                                    self.db, self.archive_db, self.archive_db2, self.workers_config,
+                                    self.db, self.archive_db, self.secret_archive, self.workers_config,
                                     self.retry_resource_items_queue,
                                     self.log_dict)
             self.retry_workers_pool.add(w)
