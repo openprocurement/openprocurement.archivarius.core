@@ -8,7 +8,6 @@ import os
 import argparse
 import uuid
 from ConfigParser import ConfigParser, NoOptionError
-from couchdb import Server, Session
 from datetime import datetime
 from functools import partial
 from gevent import spawn, sleep
@@ -19,12 +18,10 @@ from openprocurement_client.exceptions import RequestFailed
 from openprocurement.edge.utils import prepare_couchdb_views
 from pkg_resources import iter_entry_points
 from pytz import timezone
-from socket import error
 from urlparse import urlparse
-from boto.s3.connection import S3Connection
 from .workers import ArchiveWorker
 from .client import APIClient
-from .storages import S3Storage
+from .utils import prepare_couchdb, ConfigError
 
 logger = logging.getLogger(__name__)
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
@@ -56,41 +53,9 @@ DEFAULTS = {
     'workers_inc_threshold': 75,
     'workers_max': 3,
     'workers_min': 1,
+    'secret_storage': 'couchdb'
 }
 
-
-class ConfigError(Exception):
-    pass
-
-
-def prepare_couchdb(couch_url, db_name, logger):
-    server = Server(couch_url, session=Session(retry_delays=range(10)))
-    try:
-        if db_name not in server:
-            db = server.create(db_name)
-        else:
-            db = server[db_name]
-    except error as e:
-        logger.error('Database error: {}'.format(e.message))
-        raise ConfigError(e.strerror)
-
-    #validate_doc = db.get(VALIDATE_BULK_DOCS_ID, {'_id': VALIDATE_BULK_DOCS_ID})
-    #if validate_doc.get('validate_doc_update') != VALIDATE_BULK_DOCS_UPDATE:
-        #validate_doc['validate_doc_update'] = VALIDATE_BULK_DOCS_UPDATE
-        #db.save(validate_doc)
-        #logger.info('Validate document update view saved.')
-    #else:
-        #logger.info('Validate document update view already exist.')
-    return db
-
-
-def prepare_s3_connection(access_key, secret_key, bucket):
-    try:
-        connection = S3Connection(access_key, secret_key)
-    except Exception as e:
-        logger.fatal('Unable to establish s3 connection. Error: {}'.format(e.message))
-        raise ConfigError(e.strerror)
-    return S3Storage(connection, bucket)
 
 
 class ArchivariusBridge(object):
@@ -153,13 +118,11 @@ class ArchivariusBridge(object):
                               ' \'resources_api_server\'')
         self.db = prepare_couchdb(self.couch_url, self.db_name, logger)
         self.archive_db = prepare_couchdb(self.couch_url, self.db_archive_name, logger)
-        # use s3 bucket instead couchdb if keys in config
-        s3_conn_params = map(self.config_get,
-                             ['s3.access_key', 's3.secret_key', 's3.bucket'])
-        if all(s3_conn_params):
-            self.archive_db2 = prepare_s3_connection(*s3_conn_params)
-        else:
-            self.archive_db2 = prepare_couchdb(self.couch_url, self.db_archive_name + '_secret', logger)
+
+        # find storages for secret db
+        for entry_point in iter_entry_points('openprocurement.archivarius.storages', self.secret_storage):
+            storage = entry_point.load()
+            storage(self)
 
         self.resources = {}
         for entry_point in iter_entry_points('openprocurement.archivarius.resources'):
