@@ -3,17 +3,22 @@ import unittest
 import uuid
 from ConfigParser import ConfigParser
 from couchdb import Server
+from couchdb import Database
 from gevent.queue import Queue
 from logging import getLogger
 from mock import patch, MagicMock
 from munch import munchify
 from openprocurement_client.exceptions import RequestFailed
 from socket import error
-
+from openprocurement.archivarius.core.utils import (
+    prepare_couchdb
+)
 from openprocurement.archivarius.core.bridge import (
-    prepare_couchdb,
     ConfigError,
     ArchivariusBridge
+)
+from openprocurement.archivarius.core.storages import (
+    S3Storage
 )
 
 logger = getLogger(__name__)
@@ -52,7 +57,7 @@ class TestBridge(unittest.TestCase):
 
         # Database don't exist and create with exception
         del server[db_name]
-        with patch('openprocurement.archivarius.core.bridge.Server.create') as mock_create:
+        with patch('openprocurement.archivarius.core.utils.Server.create') as mock_create:
             mock_create.side_effect = error('test error')
             with self.assertRaises(ConfigError) as e:
                 prepare_couchdb(self.couchdb_url, db_name, logger)
@@ -90,17 +95,16 @@ class TestBridge(unittest.TestCase):
         self.assertEqual(archivarius.resource_items_queue.maxsize, 1)
         self.assertEqual(archivarius.retry_resource_items_queue.maxsize, 1)
 
-
         del archivarius
         tender_entrypoint = MagicMock()
         tender_entrypoint.name = 'tenders'
-        tender_entrypoint.load.return_value = 'very_smart_function'
+        tender_entrypoint.load.return_value = lambda x: x
         plan_entrypoint = MagicMock()
         plan_entrypoint.name = 'plans'
-        plan_entrypoint.load.return_value = 'very_smart_function'
+        plan_entrypoint.load.return_value = lambda x: x
         contract_entrypoint = MagicMock()
         contract_entrypoint.name = 'contracts'
-        contract_entrypoint.load.return_value = 'very_smart_function'
+        contract_entrypoint.load.return_value = lambda x: x
 
         mock_iter_entry_points.return_value = [
             tender_entrypoint, plan_entrypoint, contract_entrypoint]
@@ -108,6 +112,21 @@ class TestBridge(unittest.TestCase):
         self.assertNotEqual(archivarius.db.get('_design/contracts'), None)
         self.assertNotEqual(archivarius.db.get('_design/plans'), None)
         self.assertNotEqual(archivarius.db.get('_design/tenders'), None)
+        del archivarius
+
+    def test_init_storages(self):
+        self.config.set('main', 'secret_storage', 's3')
+        self.config.set('main', 's3.aws_access_key_id', 'AKIATEST')
+        self.config.set('main', 's3.aws_secret_access_key', 'SECRET')
+        self.config.set('main', 's3.bucket', 'BUCKET')
+        archivarius = ArchivariusBridge(self.config)
+        self.assertTrue(isinstance(archivarius.archive_db2, S3Storage))
+        del archivarius
+
+        self.config.set('main', 'secret_storage', 'couchdb')
+        archivarius = ArchivariusBridge(self.config)
+        self.assertTrue(isinstance(archivarius.archive_db2, Database))
+        del archivarius
 
     @patch('openprocurement.archivarius.core.bridge.APIClient')
     def test_create_api_client(self, mock_APIClient):

@@ -9,6 +9,7 @@ with open(os.path.join(here, 'README.rst')) as f:
 requires = [
     'gevent',
     'setuptools',
+    'boto',
     'couchdb',
     'pytz',
     'libnacl',
@@ -29,6 +30,10 @@ test_requires = bridge_requires + api_requires + [
 ]
 
 entry_points = {
+    'openprocurement.archivarius.storages': [
+        's3 = openprocurement.archivarius.core.storages.storages:s3',
+        'couchdb = openprocurement.archivarius.core.storages.storages:couch'
+    ],
     'console_scripts': [
         'archivarius = openprocurement.archivarius.core.bridge:main'
     ]
