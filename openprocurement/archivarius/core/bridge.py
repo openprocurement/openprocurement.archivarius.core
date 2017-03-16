@@ -16,6 +16,7 @@ from gevent.pool import Pool
 from gevent.queue import Queue
 from itertools import ifilter
 from openprocurement_client.exceptions import RequestFailed
+from openprocurement.edge.utils import prepare_couchdb_views
 from pkg_resources import iter_entry_points
 from pytz import timezone
 from socket import error
@@ -150,6 +151,8 @@ class ArchivariusBridge(object):
                 'filter': entry_point.load(),
                 'view_path': '_design/{}/_view/by_dateModified'.format(entry_point.name)
             }
+        for resource in self.resources:
+            prepare_couchdb_views(self.couch_url + '/' + self.db_name, resource, logger)
 
     def create_api_client(self):
         client_user_agent = self.user_agent + '/' + self.bridge_id + '/' + uuid.uuid4().hex
