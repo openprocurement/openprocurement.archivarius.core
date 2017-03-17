@@ -4,9 +4,7 @@ from ConfigParser import NoOptionError
 from uuid import UUID
 from logging import getLogger
 from functools import partial
-from openprocurement.archivarius.core.utils import (
-    prepare_couchdb
-)
+from openprocurement.archivarius.core.db import prepare_couchdb
 
 logger = getLogger(__name__)
 
@@ -53,7 +51,6 @@ class S3Storage(object):
 
 
 def s3(bridge):
-    get = partial(config_get, bridge.config)
     aws_params = {}
     for name, value in bridge.config.items('main'):
         if name[:3] != 's3.' or 'bucket' in name:

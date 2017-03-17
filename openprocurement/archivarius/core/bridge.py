@@ -21,9 +21,9 @@ from pytz import timezone
 from urlparse import urlparse
 from .workers import ArchiveWorker
 from .client import APIClient
-from .utils import prepare_couchdb, ConfigError
+from .db import prepare_couchdb, ConfigError
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 TZ = timezone(os.environ['TZ'] if 'TZ' in os.environ else 'Europe/Kiev')
 
 WORKER_CONFIG = {
@@ -55,7 +55,6 @@ DEFAULTS = {
     'workers_min': 1,
     'secret_storage': 'couchdb'
 }
-
 
 
 class ArchivariusBridge(object):
@@ -116,8 +115,8 @@ class ArchivariusBridge(object):
         else:
             raise ConfigError('In config dictionary empty or missing'
                               ' \'resources_api_server\'')
-        self.db = prepare_couchdb(self.couch_url, self.db_name, logger)
-        self.archive_db = prepare_couchdb(self.couch_url, self.db_archive_name, logger)
+        self.db = prepare_couchdb(self.couch_url, self.db_name, LOGGER)
+        self.archive_db = prepare_couchdb(self.couch_url, self.db_archive_name)
 
         # find storages for secret db
         for entry_point in iter_entry_points('openprocurement.archivarius.storages', self.secret_storage):
@@ -131,7 +130,7 @@ class ArchivariusBridge(object):
                 'view_path': '_design/{}/_view/by_dateModified'.format(entry_point.name)
             }
         for resource in self.resources:
-            prepare_couchdb_views(self.couch_url + '/' + self.db_name, resource, logger)
+            prepare_couchdb_views(self.couch_url + '/' + self.db_name, resource, LOGGER)
 
     def create_api_client(self):
         client_user_agent = self.user_agent + '/' + self.bridge_id + '/' + uuid.uuid4().hex
@@ -146,12 +145,12 @@ class ArchivariusBridge(object):
                 self.api_clients_queue.put({
                     'client': api_client,
                     'request_interval': 0})
-                logger.info('Started api_client {}'.format(
+                LOGGER.info('Started api_client {}'.format(
                     api_client.session.headers['User-Agent']))
                 break
             except RequestFailed as e:
                 self.log_dict['exceptions_count'] += 1
-                logger.error(
+                LOGGER.error(
                     'Failed start api_client with status code {}'.format(
                         e.status_code))
                 timeout = timeout * 2
@@ -183,16 +182,16 @@ class ArchivariusBridge(object):
                                         self.retry_resource_items_queue,
                                         self.log_dict)
                 self.workers_pool.add(w)
-                logger.info('Queue controller: Create main queue worker.')
+                LOGGER.info('Queue controller: Create main queue worker.')
             #elif self.resource_items_queue.qsize() < int((self.resource_items_queue_size / 100) * self.workers_dec_threshold):
             elif self.resource_items_queue.qsize() == 0:
                 if len(self.workers_pool) > self.workers_min:
                     wi = self.workers_pool.greenlets.pop()
                     wi.shutdown()
-                    logger.info('Queue controller: Kill main queue worker.')
-            logger.info('Main resource items queue contains {} items'.format(self.resource_items_queue.qsize()))
-            logger.info('Retry resource items queue contains {} items'.format(self.retry_resource_items_queue.qsize()))
-            logger.info('Status: add to queue - {add_to_resource_items_queue}, add to retry - {add_to_retry}, moved to public archive - {moved_to_public_archive}, dumped to secret archive - {dumped_to_secret_archive}, archived - {archived}, exceptions - {exceptions_count}, not found - {not_found_count}'.format(**self.log_dict))
+                    LOGGER.info('Queue controller: Kill main queue worker.')
+            LOGGER.info('Main resource items queue contains {} items'.format(self.resource_items_queue.qsize()))
+            LOGGER.info('Retry resource items queue contains {} items'.format(self.retry_resource_items_queue.qsize()))
+            LOGGER.info('Status: add to queue - {add_to_resource_items_queue}, add to retry - {add_to_retry}, moved to public archive - {moved_to_public_archive}, dumped to secret archive - {dumped_to_secret_archive}, archived - {archived}, exceptions - {exceptions_count}, not found - {not_found_count}'.format(**self.log_dict))
             sleep(self.queues_controller_timeout)
 
     def gevent_watcher(self):
@@ -204,7 +203,7 @@ class ArchivariusBridge(object):
                                     self.retry_resource_items_queue,
                                     self.log_dict)
             self.workers_pool.add(w)
-            logger.info('Watcher: Create main queue worker.')
+            LOGGER.info('Watcher: Create main queue worker.')
         if not self.retry_resource_items_queue.empty() and len(self.retry_workers_pool) < self.retry_workers_min:
             w = ArchiveWorker.spawn(self.api_clients_queue,
                                     self.retry_resource_items_queue,
@@ -212,10 +211,10 @@ class ArchivariusBridge(object):
                                     self.retry_resource_items_queue,
                                     self.log_dict)
             self.retry_workers_pool.add(w)
-            logger.info('Watcher: Create retry queue worker.')
+            LOGGER.info('Watcher: Create retry queue worker.')
 
     def run(self):
-        logger.info('Start Archivarius Bridge',
+        LOGGER.info('Start Archivarius Bridge',
                     extra={'MESSAGE_ID': 'edge_bridge_start_bridge'})
         for resource in self.resources:
             self.filter_workers_pool.spawn(self.fill_resource_items_queue, resource=resource)

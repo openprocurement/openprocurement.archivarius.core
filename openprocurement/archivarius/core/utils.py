@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from couchdb import Server, Session
 from base64 import b64encode
 from couchdb.http import ResourceConflict
 from json import dumps
@@ -10,7 +9,6 @@ from openprocurement.api.utils import context_unpack, json_view, APIResource
 from pyramid.security import Allow
 from pkg_resources import Environment
 from itertools import chain
-from socket import error
 
 PKG_ENV = Environment()
 PKG_VERSIONS = dict(chain.from_iterable([
@@ -20,10 +18,6 @@ PKG_VERSIONS = dict(chain.from_iterable([
 
 
 LOGGER = getLogger(__package__)
-
-
-class ConfigError(Exception):
-    pass
 
 
 class Root(object):
@@ -37,27 +31,6 @@ class Root(object):
     def __init__(self, request):
         self.request = request
         self.db = request.registry.db
-
-
-def prepare_couchdb(couch_url, db_name, logger=LOGGER):
-    server = Server(couch_url, session=Session(retry_delays=range(10)))
-    try:
-        if db_name not in server:
-            db = server.create(db_name)
-        else:
-            db = server[db_name]
-    except error as e:
-        logger.error('Database error: {}'.format(e.message))
-        raise ConfigError(e.strerror)
-
-    #validate_doc = db.get(VALIDATE_BULK_DOCS_ID, {'_id': VALIDATE_BULK_DOCS_ID})
-    #if validate_doc.get('validate_doc_update') != VALIDATE_BULK_DOCS_UPDATE:
-        #validate_doc['validate_doc_update'] = VALIDATE_BULK_DOCS_UPDATE
-        #db.save(validate_doc)
-        #logger.info('Validate document update view saved.')
-    #else:
-        #logger.info('Validate document update view already exist.')
-    return db
 
 
 def delete_resource(request):
