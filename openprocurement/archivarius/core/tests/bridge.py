@@ -4,7 +4,6 @@ import uuid
 from ConfigParser import ConfigParser
 from couchdb import Server
 from couchdb import Database
-from gevent.queue import Queue
 from logging import getLogger
 from mock import patch, MagicMock
 from munch import munchify
