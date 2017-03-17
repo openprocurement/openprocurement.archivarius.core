@@ -10,7 +10,7 @@ from mock import patch, MagicMock
 from munch import munchify
 from openprocurement_client.exceptions import RequestFailed
 from socket import error
-from openprocurement.archivarius.core.utils import (
+from openprocurement.archivarius.core.db import (
     prepare_couchdb
 )
 from openprocurement.archivarius.core.bridge import (
