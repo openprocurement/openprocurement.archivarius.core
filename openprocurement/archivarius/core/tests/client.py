@@ -2,10 +2,11 @@
 import unittest
 import uuid
 from datetime import datetime
-from mock import MagicMock, patch
+from mock import patch
 from munch import munchify
 
 from openprocurement.archivarius.core.client import APIClient
+
 
 class TestAPIClient(unittest.TestCase):
 
