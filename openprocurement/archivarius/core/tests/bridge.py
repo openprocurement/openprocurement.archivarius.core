@@ -4,7 +4,6 @@ import uuid
 from ConfigParser import ConfigParser
 from couchdb import Server
 from couchdb import Database
-from gevent.queue import Queue
 from logging import getLogger
 from mock import patch, MagicMock
 from munch import munchify
@@ -57,7 +56,7 @@ class TestBridge(unittest.TestCase):
 
         # Database don't exist and create with exception
         del server[db_name]
-        with patch('openprocurement.archivarius.core.utils.Server.create') as mock_create:
+        with patch('openprocurement.archivarius.core.db.Server.create') as mock_create:
             mock_create.side_effect = error('test error')
             with self.assertRaises(ConfigError) as e:
                 prepare_couchdb(self.couchdb_url, db_name, logger)

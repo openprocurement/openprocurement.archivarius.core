@@ -3,6 +3,7 @@ import datetime
 import unittest
 import uuid
 import copy
+import boto
 from hashlib import md5
 from gevent import sleep
 from gevent.queue import Queue
@@ -10,7 +11,8 @@ from mock import MagicMock, patch
 from munch import munchify
 from boto.utils import (
     merge_headers_by_name,
-    find_matching_headers
+    find_matching_headers,
+    compute_md5
 )
 
 from openprocurement_client.exceptions import (
@@ -57,7 +59,6 @@ class MockKey(object):
         self.last_modified = 'Wed, 06 Oct 2010 05:11:54 GMT'
         self.BufferSize = 8192
         self.metadata = {}
-
 
     def get_contents_as_string(self, headers=None,
                                cb=NOT_IMPL, num_cb=NOT_IMPL,
@@ -706,6 +707,7 @@ class TestArchiveWorker(unittest.TestCase):
         # Test invalid key
         data = bridge.secret_archive_db.get('invalid')
         self.assertTrue(data is None)
+
 
 def suite():
     suite = unittest.TestSuite()

@@ -3,7 +3,6 @@ from simplejson import dumps, loads
 from ConfigParser import NoOptionError
 from uuid import UUID
 from logging import getLogger
-from functools import partial
 from openprocurement.archivarius.core.db import prepare_couchdb
 
 logger = getLogger(__name__)
