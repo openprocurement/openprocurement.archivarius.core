@@ -4,6 +4,10 @@
 .. image:: https://coveralls.io/repos/openprocurement/openprocurement.archivarius.core/badge.svg
   :target: https://coveralls.io/r/openprocurement/openprocurement.archivarius.core
 
+.. image:: https://readthedocs.org/projects/openprocurementarchivariuscore/badge/?version=latest
+  :target: http://openprocurementarchivariuscore.readthedocs.io/en/latest/?badge=latest
+  :alt: Documentation Status
+
 .. image:: https://img.shields.io/hexpm/l/plug.svg
     :target: https://github.com/openprocurement/openprocurement.archivarius.core/blob/master/LICENSE
 
