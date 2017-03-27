@@ -52,13 +52,14 @@ def delete_resource(request):
 def dump_resource(request):
     arch_pubkey = getattr(request.registry, 'arch_pubkey', None)
     res_secretkey = SecretKey()
-    archive_box = Box(res_secretkey.sk, arch_pubkey)
+    archive_box = Box(res_secretkey, arch_pubkey)
     res_pubkey = res_secretkey.pk
     del res_secretkey
     data = request.context.serialize()
     json_data = dumps(data)
     encrypted_data = archive_box.encrypt(json_data)
-    return b64encode(encrypted_data), res_pubkey
+    return {'item': b64encode(encrypted_data), 'pubkey': b64encode(res_pubkey)}
+
 
 class ArchivariusResource(APIResource):
 

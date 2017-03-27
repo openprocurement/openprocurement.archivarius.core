@@ -123,7 +123,8 @@ class TestUtils(unittest.TestCase):
             'doc_type': 'Tenders'
         }
         request.context.serialize.return_value = context
-        res, key = dump_resource(request)
+        dump = dump_resource(request)
+        res, key = dump['item'], dump['pubkey']
         decrypt_box = Box("b"*32, "c"*32)
         decrypted_data = decrypt_box.decrypt(b64decode(res))
         decrypted_data = json.loads(decrypted_data)
@@ -140,7 +141,7 @@ class TestUtils(unittest.TestCase):
         response = self.app.get('/tenders/abc/dump')
         encrypted_dump = response.json['data']['tender']
         archive_box = self.config.registry.decr_box
-        decrypted_data = archive_box.decrypt(b64decode(encrypted_dump[0]))
+        decrypted_data = archive_box.decrypt(b64decode(encrypted_dump['item']))
         decrypted_data = json.loads(decrypted_data)
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(decrypted_data, tender.serialize.return_value)
@@ -157,7 +158,7 @@ class TestUtils(unittest.TestCase):
         response = self.app.delete('/tenders/abc/dump')
         encrypted_dump = response.json['data']['tender']
         archive_box = self.config.registry.decr_box
-        decrypted_data = archive_box.decrypt(b64decode(encrypted_dump[0]))
+        decrypted_data = archive_box.decrypt(b64decode(encrypted_dump['item']))
         decrypted_data = json.loads(decrypted_data)
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(decrypted_data, tender.serialize.return_value)
