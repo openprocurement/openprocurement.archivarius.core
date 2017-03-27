@@ -598,7 +598,14 @@ class TestArchiveWorker(unittest.TestCase):
         # Try get resource item dump from cdb
         resource_item['_rev'] = '1-' + uuid.uuid4().hex
         secret_doc = {
-            'id': resource_item['id']
+            'data': {
+                'dateModified': datetime.datetime.now().isoformat(),
+                'versions': 'versions',
+                'tender': {
+                    'item': 'item',
+                    'pubkey': 'pubkey'
+                }
+            }
         }
         bridge._action_resource_item_from_cdb = MagicMock(side_effect=[Exception('From CDB exception'),
                                                                        secret_doc, secret_doc,
@@ -693,7 +700,14 @@ class TestArchiveWorker(unittest.TestCase):
         # Try get resource item dump from cdb
         resource_item['_rev'] = '1-' + uuid.uuid4().hex
         secret_doc = {
-            'id': resource_item['id']
+            'data': {
+                'dateModified': datetime.datetime.now().isoformat(),
+                'versions': 'versions',
+                'tender': {
+                    'item': 'item',
+                    'pubkey': 'pubkey'
+                }
+            }
         }
         bridge._action_resource_item_from_cdb = MagicMock(side_effect=[secret_doc, secret_doc])
 

@@ -66,6 +66,7 @@ class ArchivariusResource(APIResource):
     def __init__(self, request, context):
         super(ArchivariusResource, self).__init__(request, context)
         self.resource = request.context.doc_type.lower()
+        self.dateModified = request.context.dateModified.isoformat()
 
     @json_view(permission='dump_resource')
     def get(self):
@@ -73,7 +74,7 @@ class ArchivariusResource(APIResource):
         """
         self.LOGGER.info('Dumped {} {}'.format(self.resource, self.context.id),
                          extra=context_unpack(self.request, {'MESSAGE_ID': '{}_dumped'.format(self.resource)}))
-        return {'data': {self.resource: dump_resource(self.request), 'versions': PKG_VERSIONS}}
+        return {'data': {'dateModified': self.dateModified, self.resource: dump_resource(self.request), 'versions': PKG_VERSIONS}}
 
     @json_view(permission='delete_resource')
     def delete(self):
@@ -82,4 +83,4 @@ class ArchivariusResource(APIResource):
         if delete_resource(self.request):
             self.LOGGER.info('Deleted {} {}'.format(self.resource, self.context.id),
                              extra=context_unpack(self.request, {'MESSAGE_ID': '{}_deleted'.format(self.resource)}))
-            return {'data': {self.resource: dump_resource(self.request), 'versions': PKG_VERSIONS}}
+            return {'data': {'dateModified': self.dateModified, self.resource: dump_resource(self.request), 'versions': PKG_VERSIONS}}

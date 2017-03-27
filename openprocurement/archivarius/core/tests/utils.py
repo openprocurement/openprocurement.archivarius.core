@@ -25,6 +25,7 @@ from munch import munchify
 
 tender = MagicMock()
 tender.doc_type.lower.return_value = 'tender'
+tender.dateModified.isoformat.return_value = datetime.now().isoformat()
 tender.serialize.return_value = dict(
     id=uuid.uuid4().hex,
     dateModified=datetime.now().isoformat(),

@@ -1,5 +1,5 @@
 from boto.s3.connection import S3Connection
-from simplejson import dumps, loads
+from json import dumps, loads
 from ConfigParser import NoOptionError
 from uuid import UUID
 from logging import getLogger
