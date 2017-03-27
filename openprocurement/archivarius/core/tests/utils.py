@@ -12,6 +12,7 @@ from webtest import TestApp
 from cornice.tests.support import CatchErrors
 from datetime import datetime
 from libnacl.secret import SecretBox
+from libnacl.public import Box
 from openprocurement.api.utils import opresource, add_logging_context
 from openprocurement.archivarius.core.utils import (
     Root,
@@ -72,7 +73,7 @@ class TestUtils(unittest.TestCase):
         cls.config.registry.server_id = uuid.uuid4().hex
         cls.config.registry.docservice_key = MagicMock()
         cls.config.context = munchify(tender.serialize.return_value)
-        cls.config.registry.docservice_key.vk = 'a' * 32
+        cls.config.registry.decr_box = Box("b"*32, "c"*32)
         cls.config.add_subscriber(add_logging_context, NewRequest)
         cls.config.add_subscriber(MagicMock(), ContextFound)
         cls.config.add_subscriber(MagicMock(), NewRequest)
@@ -110,47 +111,53 @@ class TestUtils(unittest.TestCase):
         res = delete_resource(request)
         self.assertEqual(res, True)
 
-    def test_dump_resource(self):
+    @patch('libnacl.crypto_box_keypair')
+    def test_dump_resource(self, mock_crypto_box_keypair):
         request = MagicMock()
+        request.registry.arch_pubkey = 'c' * 32
+        mock_crypto_box_keypair.return_value = ["a"*32, "b"*32]
         context = {
             'id': uuid.uuid4().hex,
             'rev': '1-{}'.format(uuid.uuid4().hex),
             'dateModified': datetime.now().isoformat(),
             'doc_type': 'Tenders'
         }
-        request.registry.docservice_key.vk = 'a' * 32
         request.context.serialize.return_value = context
-        res = dump_resource(request)
-        box = SecretBox('a' * 32)
-        decrypted_data = box.decrypt(b64decode(res))
+        res, key = dump_resource(request)
+        decrypt_box = Box("b"*32, "c"*32)
+        decrypted_data = decrypt_box.decrypt(b64decode(res))
         decrypted_data = json.loads(decrypted_data)
         self.assertNotEqual(res, json.dumps(context))
         self.assertEqual(decrypted_data, context)
 
-    def test_dump(self):
+    @patch('libnacl.crypto_box_keypair')
+    def test_dump(self, mock_crypto_box_keypair):
         response = self.app.get('/tenders/abc/dump', status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.app.authorization = ('Basic', ('archivarius', ''))
+        self.app.app.registry.arch_pubkey = "c"*32
+        mock_crypto_box_keypair.return_value = ["a"*32, "b"*32]
         response = self.app.get('/tenders/abc/dump')
-
         encrypted_dump = response.json['data']['tender']
-        box = SecretBox('a' * 32)
-        decrypted_data = box.decrypt(b64decode(encrypted_dump))
+        archive_box = self.config.registry.decr_box
+        decrypted_data = archive_box.decrypt(b64decode(encrypted_dump[0]))
         decrypted_data = json.loads(decrypted_data)
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(decrypted_data, tender.serialize.return_value)
 
+    @patch('libnacl.crypto_box_keypair')
     @patch('openprocurement.api.utils.error_handler')
     @patch('openprocurement.api.utils.context_unpack')
-    def test_delete(self, mock_error_handler, mock_context_unpack):
+    def test_delete(self, mock_error_handler, mock_context_unpack, mock_crypto_box_keypair):
         response = self.app.delete('/tenders/abc/dump', status=403)
         self.assertEqual(response.status, '403 Forbidden')
         self.app.authorization = ('Basic', ('archivarius', ''))
+        self.app.app.registry.arch_pubkey = "c"*32
+        mock_crypto_box_keypair.return_value = ["a"*32, "b"*32]
         response = self.app.delete('/tenders/abc/dump')
-
         encrypted_dump = response.json['data']['tender']
-        box = SecretBox('a' * 32)
-        decrypted_data = box.decrypt(b64decode(encrypted_dump))
+        archive_box = self.config.registry.decr_box
+        decrypted_data = archive_box.decrypt(b64decode(encrypted_dump[0]))
         decrypted_data = json.loads(decrypted_data)
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(decrypted_data, tender.serialize.return_value)

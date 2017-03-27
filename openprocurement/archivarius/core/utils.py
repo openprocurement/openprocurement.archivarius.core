@@ -3,7 +3,7 @@
 from base64 import b64encode
 from couchdb.http import ResourceConflict
 from json import dumps
-from libnacl.secret import SecretBox
+from libnacl.public import SecretKey, Box
 from logging import getLogger
 from openprocurement.api.utils import context_unpack, json_view, APIResource
 from pyramid.security import Allow
@@ -50,13 +50,15 @@ def delete_resource(request):
 
 
 def dump_resource(request):
-    docservice_key = getattr(request.registry, 'docservice_key', None)
-    box = SecretBox(docservice_key.vk)
+    arch_pubkey = getattr(request.registry, 'arch_pubkey', None)
+    res_secretkey = SecretKey()
+    archive_box = Box(res_secretkey.sk, arch_pubkey)
+    res_pubkey = res_secretkey.pk
+    del res_secretkey
     data = request.context.serialize()
     json_data = dumps(data)
-    encrypted_data = box.encrypt(json_data)
-    return b64encode(encrypted_data)
-
+    encrypted_data = archive_box.encrypt(json_data)
+    return b64encode(encrypted_data), res_pubkey
 
 class ArchivariusResource(APIResource):
 
