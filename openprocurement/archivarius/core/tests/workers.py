@@ -213,6 +213,16 @@ class MockBucket(object):
         new_key.size = len(new_key.data)
         return new_key
 
+    def lookup(self, key_name, headers=None):
+        """
+        Deprecated: Please use get_key method.
+        :type key_name: string
+        :param key_name: The name of the key to retrieve
+        :rtype: :class:`boto.s3.key.Key`
+        :returns: A Key object from this bucket.
+        """
+        return self.get_key(key_name, headers=headers)
+
 
 class MockProvider(object):
 
@@ -617,8 +627,10 @@ class TestArchiveWorker(unittest.TestCase):
         self.assertEqual(bridge.log_dict['exceptions_count'], 3)
         self.assertEqual(bridge.log_dict['add_to_retry'], 4)
 
-        bridge.secret_archive_db.get.side_effect = [Exception('Secret DB exception'), None, secret_doc,
-                                                    secret_doc, secret_doc, secret_doc, secret_doc]
+        secret_db_doc = secret_doc.copy()
+        secret_db_doc['dateModified'] = secret_doc['data']['dateModified']
+        bridge.secret_archive_db.get.side_effect = [Exception('Secret DB exception'), None, secret_db_doc,
+                                                    secret_db_doc, secret_db_doc, secret_db_doc, secret_db_doc]
         queue.put(queue_resource_item)
         bridge._run()
         self.assertEqual(bridge.log_dict['exceptions_count'], 4)
@@ -707,7 +719,8 @@ class TestArchiveWorker(unittest.TestCase):
                     'item': 'item',
                     'pubkey': 'pubkey'
                 }
-            }
+            },
+            '_id': uuid.uuid4().hex
         }
         bridge._action_resource_item_from_cdb = MagicMock(side_effect=[secret_doc, secret_doc])
 
@@ -716,6 +729,9 @@ class TestArchiveWorker(unittest.TestCase):
         self.assertEqual(bridge.log_dict['exceptions_count'], 0)
         self.assertEqual(bridge.log_dict['add_to_retry'], 0)
         data = bridge.secret_archive_db.get(queue_resource_item['id'])
+        self.assertIn('_rev', data)
+        self.assertEqual(data.get('_rev'), 1)
+        self.assertEqual(data.get('dateModified'), queue_resource_item['dateModified'])
         self.assertEqual(secret_doc, data.get('data'))
 
         # Test invalid key

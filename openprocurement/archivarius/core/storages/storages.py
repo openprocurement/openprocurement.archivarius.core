@@ -1,4 +1,5 @@
 from boto.s3.connection import S3Connection
+from boto.s3.key import Key
 from json import dumps, loads
 from ConfigParser import NoOptionError
 from uuid import UUID
@@ -28,9 +29,16 @@ class S3Storage(object):
         _id = data.get('id') if 'id' in data else data.get('_id')
         path = self._parse_key(_id)
         bucket = self.connection.get_bucket(self.bucket)
-        key = bucket.new_key(path)
-        key.set_contents_from_string(dumps(data))
-        key.set_acl('private')
+        key = Key(bucket, path)
+        if key.exists():
+            dumped_resource = loads(key.get_contents_as_string())
+            dumped_resource.update(data)
+            dumped_resource['_rev'] = int(dumped_resource['_rev']) + 1
+            key.set_contents_from_string(dumps(dumped_resource))
+        else:
+            key = bucket.new_key(path)
+            data['_rev'] = 1
+            key.set_contents_from_string(dumps(data))
         key.set_metadata('Content-Type', 'application/json')
 
     def get(self, key):
