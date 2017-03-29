@@ -190,10 +190,16 @@ class ArchiveWorker(Greenlet):
                 try:
                     archive_item_doc = self.secret_archive_db.get(queue_resource_item['id'])
                     if archive_item_doc is None:
-                        self.secret_archive_db.save({'_id': queue_resource_item['id'], 'data': secret_doc})
-                    #elif archive_item_doc['dateModified'] < resource_item_doc['dateModified']:
-                        #resource_item_doc['_rev'] = archive_item_doc.rev
-                        #self.archive_db.save(resource_item_doc)
+                        self.secret_archive_db.save({'_id': queue_resource_item['id'],
+                                                     'dateModified': queue_resource_item['dateModified'],
+                                                     'data': secret_doc})
+                    elif archive_item_doc['dateModified'] < queue_resource_item['dateModified']:
+                        self.secret_archive_db.save({
+                            '_id': queue_resource_item['id'],
+                            'dateModified': queue_resource_item['dateModified'],
+                            '_rev': archive_item_doc.get('_rev'),
+                            'data': secret_doc
+                        })
                 except Exception as e:
                     self.add_to_retry_queue(queue_resource_item)
                     logger.error('Error while putting resource item to secret couchdb: '
