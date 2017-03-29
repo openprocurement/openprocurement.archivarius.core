@@ -12,7 +12,7 @@ logger = getLogger(__name__)
 def config_get(config, opt):
     try:
         config.get('main', opt)
-    except NoOptionError:
+    except NoOptionError: # pragma: no cover
         return ''
 
 

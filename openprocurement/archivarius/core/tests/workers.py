@@ -5,6 +5,7 @@ import uuid
 import copy
 import boto
 from hashlib import md5
+from datetime import timedelta
 from gevent import sleep
 from gevent.queue import Queue
 from mock import MagicMock, patch
@@ -60,11 +61,16 @@ class MockKey(object):
         self.BufferSize = 8192
         self.metadata = {}
 
+    def exists(self):
+        return self.name in self.bucket
+
     def get_contents_as_string(self, headers=None,
                                cb=NOT_IMPL, num_cb=NOT_IMPL,
                                torrent=NOT_IMPL,
                                version_id=NOT_IMPL,
                                response_headers=NOT_IMPL, encoding=NOT_IMPL):
+        if self.name in self.bucket:
+            return copy.copy(self.bucket.keys[self.name].data)
         return self.data
 
     def set_contents_from_file(self, fp, headers=None, replace=NOT_IMPL,
@@ -80,6 +86,9 @@ class MockKey(object):
                                  cb=NOT_IMPL, num_cb=NOT_IMPL, policy=NOT_IMPL,
                                  md5=NOT_IMPL, reduced_redundancy=NOT_IMPL):
         self.data = copy.copy(s)
+        if self.name in self.bucket:
+            self.bucket.keys[self.name].data = self.data
+
         self.set_etag()
         self.size = len(s)
         self._handle_headers(headers)
@@ -665,6 +674,7 @@ class TestArchiveWorker(unittest.TestCase):
         self.assertEqual(worker.exit, True)
 
     @patch('openprocurement_client.client.TendersClient')
+    @patch('openprocurement.archivarius.core.storages.storages.Key', MockKey)
     def test_storage(self, mock_api_client):
         s3_key = 'key'
         s3_secret_key = 'secret'
@@ -737,6 +747,26 @@ class TestArchiveWorker(unittest.TestCase):
         # Test invalid key
         data = bridge.secret_archive_db.get('invalid')
         self.assertTrue(data is None)
+
+        data = bridge.secret_archive_db.get('/')
+        self.assertEqual(data, None)
+        key = '/'.join([format(i, 'x') for i in uuid.UUID(queue_resource_item['id']).fields])
+        data = bridge.secret_archive_db.get(key)
+        self.assertEqual(data.get('data'), secret_doc)
+
+        secret_doc_updated = secret_doc.copy()
+        secret_doc_updated['data']['tender'] = {'item': 'item2', 'pubkey': 'pubkey'}
+        bridge.db.get.side_effect = [resource_item, resource_item]
+        bridge.archive_db.get.side_effect = [munchify(archive_doc), munchify(archive_doc)]
+        bridge._get_api_client_dict = MagicMock(side_effect=[api_client_dict, api_client_dict])
+        bridge._action_resource_item_from_cdb = MagicMock(side_effect=[secret_doc_updated, secret_doc_updated])
+        queue_resource_item_updated = queue_resource_item
+        queue_resource_item_updated['dateModified'] = (datetime.datetime.now() + timedelta(days=1)).isoformat()
+        queue.put(queue_resource_item)
+        bridge._run()
+        data = bridge.secret_archive_db.get(queue_resource_item['id'])
+        self.assertEqual(data.get('_rev'), 2)
+        self.assertEqual(data.get('data'), secret_doc_updated)
 
 
 def suite():
