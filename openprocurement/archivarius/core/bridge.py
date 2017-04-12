@@ -167,6 +167,7 @@ class ArchivariusBridge(object):
         for row in ifilter(filter_func, rows):
             self.resource_items_queue.put({
                 'id': row.id,
+                'dateModified': row.key,
                 'resource': resource
             })
             self.log_dict['add_to_resource_items_queue'] += 1
