@@ -151,8 +151,8 @@ class TestBridge(unittest.TestCase):
 
     @patch('openprocurement.archivarius.core.bridge.ifilter')
     def test_fill_resource_items_queue(self, mock_ifilter):
-        mock_ifilter.return_value = [munchify({'id': uuid.uuid4().hex}),
-                                     munchify({'id': uuid.uuid4().hex})]
+        mock_ifilter.return_value = [munchify({'id': uuid.uuid4().hex, 'key': "2015"}),
+                                     munchify({'id': uuid.uuid4().hex, 'key': "2016"})]
         bridge = ArchivariusBridge(self.config)
         bridge.resources['tenders'] = {'view_path': 'path', 'filter': MagicMock()}
         self.assertEqual(bridge.resource_items_queue.qsize(), 0)
