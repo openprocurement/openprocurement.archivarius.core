@@ -162,7 +162,7 @@ class ArchivariusBridge(object):
 
     def fill_resource_items_queue(self, resource):
         start_time = datetime.now(TZ)
-        rows = self.db.iterview(self.resources[resource]['view_path'], 10 ** 3, include_docs=True)
+        rows = self.db.iterview(self.resources[resource]['view_path'], 10 ** 3)
         filter_func = partial(self.resources[resource]['filter'], time=start_time)
         for row in ifilter(filter_func, rows):
             self.resource_items_queue.put({
