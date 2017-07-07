@@ -37,7 +37,7 @@ def delete_resource(request):
     db_doc = request.context
     resource = db_doc.doc_type.lower()
     try:
-        _, rev = request.registry.db.save({'_id': db_doc.id, '_rev': db_doc.rev, '_deleted': True})
+        _, rev = request.registry.db.save({'_id': db_doc.id, '_rev': db_doc.rev, 'doc_type': resource})
     except ResourceConflict, e:  # pragma: no cover
         request.errors.add('body', 'data', str(e))
         request.errors.status = 409
