@@ -7,6 +7,7 @@ import logging.config
 from openprocurement_client.exceptions import (
     InvalidResponse,
     RequestFailed,
+    ResourceGone,
     ResourceNotFound
 )
 
@@ -114,6 +115,12 @@ class ArchiveWorker(Greenlet):
             self.add_to_retry_queue(queue_resource_item, status_code=e.status_code)
             self.log_dict['exceptions_count'] += 1
             return None  # request failed
+        except ResourceGone as e:
+            logger.error('Resource archived {} at cdb: {}. {}'.format(
+                queue_resource_item['resource'], queue_resource_item['id'], e.message))
+            self.log_dict['not_found_count'] += 1
+            self.api_clients_queue.put(api_client_dict)
+            return None  # not found
         except ResourceNotFound as e:
             logger.error('Resource not found {} at cdb: {}. {}'.format(
                 queue_resource_item['resource'], queue_resource_item['id'], e.message))
