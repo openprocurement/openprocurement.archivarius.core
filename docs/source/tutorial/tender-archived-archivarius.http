@@ -1,0 +1,280 @@
+GET /api/2.4/tenders/41664571a3d949dfb072d46c8e3261a4 HTTP/1.1
+Host: archive.api-sandbox.openprocurement.org
+
+Response: 200 OK
+Content-Type: application/json; charset=UTF-8
+Content-Length: 12493
+{
+  "data": {
+    "procurementMethod": "open",
+    "numberOfBids": 2,
+    "awardPeriod": {
+      "startDate": "2017-10-10T15:08:59.012215+03:00"
+    },
+    "enquiryPeriod": {
+      "startDate": "2017-10-10T14:01:03.246531+03:00",
+      "endDate": "2017-10-10T14:04:03.246531+03:00"
+    },
+    "submissionMethod": "electronicAuction",
+    "procurementMethodType": "belowThreshold",
+    "awardCriteria": "lowestCost",
+    "owner": "test.quintagroup.com",
+    "id": "f5ac9a1fba814b8ca8116982415a32aa",
+    "description": "Цяв! самоук буба позламувати нороха моня виґуляри звідси чортиха брухо позламувати гупалка відрубність.",
+    "documents": [
+      {
+        "hash": "md5:32bf8656007f0a6e8f24f1b842669ebb",
+        "author": "auction",
+        "format": "text/plain",
+        "url": "https://public.docs-sandbox.openprocurement.org/get/3673f8fae969459e851d4e023cbc4d7f?KeyID=1331dc52&Signature=5bF9IgLq9hBwbYPocaMyLHlszTaB9Agg1gxqsXieygo4pqE%2Fj0ORT2SIR2aIMeGOkKqtYGvaZ375CLuDZ62GCA%253D%253D",
+        "title": "audit_f5ac9a1fba814b8ca8116982415a32aa_0039334df12a44d99278b74b1b5c5fa1.yaml",
+        "documentOf": "tender",
+        "datePublished": "2017-10-10T15:08:58.868843+03:00",
+        "dateModified": "2017-10-10T15:08:58.868861+03:00",
+        "id": "107560daf42c452794f23ce960276fb3"
+      }
+    ],
+    "title": "[ТЕСТУВАННЯ] Коськання начутися лементіти.",
+    "lots": [
+      {
+        "status": "active",
+        "description": "Сив накрашувати відрубність заважний буддень штанці воратися.",
+        "title": "l-9eddaab2: Компанійський голубаня іконний.",
+        "minimalStep": {
+          "currency": "UAH",
+          "amount": 379719.99,
+          "valueAddedTaxIncluded": true
+        },
+        "auctionPeriod": {
+          "startDate": "2017-10-10T15:08:59.004493+03:00",
+          "endDate": "2017-10-10T15:08:59.004493+03:00"
+        },
+        "title_en": "l-5d411101: Sunt nesciunt inventore libero maiores nihil.",
+        "value": {
+          "currency": "UAH",
+          "amount": 58867243.03,
+          "valueAddedTaxIncluded": true
+        },
+        "auctionUrl": "https://auction-sandbox.openprocurement.org/tenders/f5ac9a1fba814b8ca8116982415a32aa_0039334df12a44d99278b74b1b5c5fa1",
+        "title_ru": "l-79e23118: Нэ лыгимуз ёужто омнэжквюы жэмпэр.",
+        "date": "2017-10-10T14:01:05.632029+03:00",
+        "id": "0039334df12a44d99278b74b1b5c5fa1"
+      }
+    ],
+    "tenderID": "UA-2017-10-10-000050-a",
+    "description_ru": "Кибо нэ ыёюз бландит элыктрам мэль адипижкй вэртырэм зигнёфэрумквюы ипзум.",
+    "dateModified": "2017-10-10T15:08:59.015143+03:00",
+    "status": "active.qualification",
+    "tenderPeriod": {
+      "startDate": "2017-10-10T14:04:03.246531+03:00",
+      "endDate": "2017-10-10T14:14:03.246531+03:00"
+    },
+    "procurementMethodDetails": "quick, accelerator=400",
+    "title_en": "[TESTING] Face-to-face well-modulated archive",
+    "description_en": "Quam cumque distinctio tempore accusantium labore culpa.",
+    "awards": [
+      {
+        "status": "pending",
+        "lotID": "0039334df12a44d99278b74b1b5c5fa1",
+        "complaintPeriod": {
+          "startDate": "2017-10-10T15:08:59.012215+03:00"
+        },
+        "suppliers": [
+          {
+            "contactPoint": {
+              "telephone": "426-07-12",
+              "url": "http://skinmedic.com.ua",
+              "faxNumber": "413-41-40",
+              "name": "Чередниченко Олена Юріївна",
+              "email": "kmkshvl@ukr.net"
+            },
+            "identifier": {
+              "scheme": "UA-EDR",
+              "id": "00037256",
+              "legalName": "Київська міська клінічна шкірно-венерологічна лікарня"
+            },
+            "name": "Київська міська клінічна шкірно-венерологічна лікарня",
+            "address": {
+              "locality": "Київ",
+              "region": "місто Київ",
+              "countryName_en": "Ukraine",
+              "countryName": "Україна",
+              "streetAddress": "вулиця Богатирська, 32",
+              "countryName_ru": "Украина",
+              "postalCode": "04655"
+            }
+          }
+        ],
+        "bid_id": "c70fbbbfc9944655834551ce4028d286",
+        "value": {
+          "currency": "UAH",
+          "amount": 56067022.87,
+          "valueAddedTaxIncluded": true
+        },
+        "date": "2017-10-10T15:08:59.012366+03:00",
+        "id": "2858c06e60e2493882cf9ebf69ee7e59"
+      }
+    ],
+    "date": "2017-10-10T15:08:59.015143+03:00",
+    "submissionMethodDetails": "quick(mode:fast-forward)",
+    "items": [
+      {
+        "relatedLot": "0039334df12a44d99278b74b1b5c5fa1",
+        "description": "i-07a26c30: Клей СМ-11",
+        "classification": {
+          "scheme": "ДК021",
+          "description": "Клеї",
+          "id": "24910000-6"
+        },
+        "description_en": "i-19a61617: Glue SM-11",
+        "deliveryLocation": {
+          "latitude": "50.537702",
+          "longitude": "30.174488"
+        },
+        "deliveryAddress": {
+          "locality": "Ворзель",
+          "region": "Київська область",
+          "countryName_en": "Ukraine",
+          "countryName": "Україна",
+          "streetAddress": "вулиця Курортна, 22",
+          "countryName_ru": "Украина",
+          "postalCode": "08296"
+        },
+        "deliveryDate": {
+          "startDate": "2017-10-27T14:01:03.249331+03:00",
+          "endDate": "2017-10-27T14:01:03.249384+03:00"
+        },
+        "description_ru": "i-a884e99b: Клей СМ-11",
+        "id": "65cb542447774dafbe19d83fbd468bfb",
+        "unit": {
+          "code": "KGM",
+          "name": "кілограми"
+        },
+        "quantity": 53
+      }
+    ],
+    "bids": [
+      {
+        "date": "2017-10-10T14:04:38.111925+03:00",
+        "status": "active",
+        "id": "c70fbbbfc9944655834551ce4028d286",
+        "lotValues": [
+          {
+            "relatedLot": "0039334df12a44d99278b74b1b5c5fa1",
+            "date": "2017-10-10T14:04:38.111856+03:00",
+            "participationUrl": "https://auction-sandbox.openprocurement.org/tenders/f5ac9a1fba814b8ca8116982415a32aa_0039334df12a44d99278b74b1b5c5fa1/login?bidder_id=c70fbbbfc9944655834551ce4028d286&hash=6884b67c1efeaaa54202e7f753370126ed47d389",
+            "value": {
+              "currency": "UAH",
+              "amount": 56067022.87,
+              "valueAddedTaxIncluded": true
+            }
+          }
+        ],
+        "tenderers": [
+          {
+            "contactPoint": {
+              "telephone": "426-07-12",
+              "url": "http://skinmedic.com.ua",
+              "faxNumber": "413-41-40",
+              "name": "Чередниченко Олена Юріївна",
+              "email": "kmkshvl@ukr.net"
+            },
+            "identifier": {
+              "scheme": "UA-EDR",
+              "id": "00037256",
+              "legalName": "Київська міська клінічна шкірно-венерологічна лікарня"
+            },
+            "name": "Київська міська клінічна шкірно-венерологічна лікарня",
+            "address": {
+              "locality": "Київ",
+              "region": "місто Київ",
+              "countryName_en": "Ukraine",
+              "countryName": "Україна",
+              "streetAddress": "вулиця Богатирська, 32",
+              "countryName_ru": "Украина",
+              "postalCode": "04655"
+            }
+          }
+        ]
+      },
+      {
+        "date": "2017-10-10T14:05:55.939954+03:00",
+        "status": "active",
+        "id": "54a53642a10c479d93b4d561c705a558",
+        "lotValues": [
+          {
+            "relatedLot": "0039334df12a44d99278b74b1b5c5fa1",
+            "date": "2017-10-10T14:05:55.939919+03:00",
+            "participationUrl": "https://auction-sandbox.openprocurement.org/tenders/f5ac9a1fba814b8ca8116982415a32aa_0039334df12a44d99278b74b1b5c5fa1/login?bidder_id=54a53642a10c479d93b4d561c705a558&hash=db38550e8cc90f997c4f4b2d6703cc01bd31b249",
+            "value": {
+              "currency": "UAH",
+              "amount": 57806034.66,
+              "valueAddedTaxIncluded": true
+            }
+          }
+        ],
+        "tenderers": [
+          {
+            "contactPoint": {
+              "telephone": "044-563-99-42---------097-641-99-01",
+              "url": "http://kpbl.org.ua",
+              "faxNumber": "044-563-99-05",
+              "name": "Хильченко Інна Григорівна",
+              "email": "kpbl@bigmir.net"
+            },
+            "identifier": {
+              "scheme": "UA-EDR",
+              "id": "13313462",
+              "legalName": "Київський професійний будівельний ліцей"
+            },
+            "name": "Київський професійний будівельний ліцей",
+            "address": {
+              "locality": "Київ",
+              "region": "місто Київ",
+              "countryName_en": "Ukraine",
+              "countryName": "Україна",
+              "streetAddress": "вулиця Чернігівська, 220, 8",
+              "countryName_ru": "Украина",
+              "postalCode": "02121"
+            }
+          }
+        ]
+      }
+    ],
+    "value": {
+      "currency": "UAH",
+      "amount": 58867243.03,
+      "valueAddedTaxIncluded": true
+    },
+    "minimalStep": {
+      "currency": "UAH",
+      "amount": 379719.99,
+      "valueAddedTaxIncluded": true
+    },
+    "mode": "test",
+    "title_ru": "[ТЕСТИРОВАНИЕ] Self-enabling background application",
+    "procuringEntity": {
+      "contactPoint": {
+        "telephone": "426-07-12",
+        "url": "http://skinmedic.com.ua",
+        "faxNumber": "413-41-40",
+        "name": "Чередниченко Олена Юріївна",
+        "email": "kmkshvl@ukr.net"
+      },
+      "identifier": {
+        "scheme": "UA-EDR",
+        "id": "00037256",
+        "legalName": "Київська міська клінічна шкірно-венерологічна лікарня"
+      },
+      "name": "Київська міська клінічна шкірно-венерологічна лікарня",
+      "kind": "other",
+      "address": {
+        "postalCode": "04655",
+        "countryName": "Україна",
+        "streetAddress": "вулиця Богатирська, 32",
+        "region": "місто Київ",
+        "locality": "Київ"
+      }
+    }
+  }
+}
