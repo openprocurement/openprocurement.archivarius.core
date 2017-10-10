@@ -1,0 +1,15 @@
+GET /api/2.4/tenders/41664571a3d949dfb072d46c8e3261a4 HTTP/1.1
+Host: api-sandbox.openprocurement.org
+
+Response: 410 Gone
+Content-Type: application/json; charset=UTF-8
+{
+  "status": "error",
+  "errors": [
+    {
+      "location": "url",
+      "name": "tender_id",
+      "description": "Archived"
+    }
+  ]
+}
