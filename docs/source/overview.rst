@@ -19,16 +19,16 @@ Workflow
 
 
 `sync`
-  звичайна синхронізація в EDGE публічних даних
+  general synchronization of public data in the EDGE
 
 `rules`
-  перенесення публічних даних в архів згідно з правилами архівування
+  transfer of the public data to archive according to archivation rules
 
 `dump`
-  збереження шифрованих внутрішніх структур даних в архіві секретних даних
+  saving of the encrypted internal data structures to the secret data archive
 
 `delete`
-  видалення структури з ЦБД
+  structure delete from the CDB
 
 
 Documentation of related packages
