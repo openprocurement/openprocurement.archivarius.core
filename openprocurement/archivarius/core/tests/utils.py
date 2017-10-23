@@ -13,7 +13,8 @@ from cornice.tests.support import CatchErrors
 from datetime import datetime
 from libnacl.secret import SecretBox
 from libnacl.public import Box
-from openprocurement.api.utils import opresource, add_logging_context
+from openprocurement.api.utils import opresource
+from openprocurement.api.subscribers import add_logging_context
 from openprocurement.archivarius.core.utils import (
     Root,
     delete_resource,
