@@ -18,6 +18,19 @@ Workflow
     }
 
 
+`sync`
+  general synchronization of public data in the EDGE
+
+`rules`
+  transfer of the public data to archive according to archivation rules
+
+`dump`
+  saving of the encrypted internal data structures to the secret data archive
+
+`delete`
+  structure delete from the CDB
+
+
 Documentation of related packages
 ---------------------------------
 
