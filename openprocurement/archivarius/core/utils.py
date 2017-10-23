@@ -5,7 +5,7 @@ from couchdb.http import ResourceConflict
 from json import dumps
 from libnacl.public import SecretKey, Box
 from logging import getLogger
-from openprocurement.api.utils import context_unpack, json_view, APIResource
+from openprocurement.api.utils import context_unpack, json_view, APIResource, DecimalEncoder
 from pyramid.security import Allow
 from pkg_resources import Environment
 from itertools import chain
@@ -56,7 +56,7 @@ def dump_resource(request):
     res_pubkey = res_secretkey.pk
     del res_secretkey
     data = request.context.serialize()
-    json_data = dumps(data)
+    json_data = dumps(data, cls=DecimalEncoder)
     encrypted_data = archive_box.encrypt(json_data)
     return {'item': b64encode(encrypted_data), 'pubkey': b64encode(res_pubkey)}
 
