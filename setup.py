@@ -40,7 +40,7 @@ entry_points = {
 }
 
 setup(name='openprocurement.archivarius.core',
-      version='1.0',
+      version='1.0.1',
       description='openprocurement.archivarius.core',
       long_description=README,
       classifiers=[
